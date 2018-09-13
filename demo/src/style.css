@@ -110,7 +110,7 @@ input {
   max-width: 200px;
 }
 
-.rainbow-overlay {
+.progress {
   background: black;
   position: fixed;
   right: 0;

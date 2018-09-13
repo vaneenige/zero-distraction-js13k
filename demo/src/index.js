@@ -21,16 +21,14 @@ const phase1 = document.querySelector('.phase-1');
 
 // Phase 2: Instruction (with WebGL scene)
 const phase2 = document.querySelector('.phase-2');
-const button = document.querySelector('button');
 
 // Phase 3: Code input (from phase 2)
 const phase3 = document.querySelector('.phase-3');
-const input = document.querySelector('input');
+const input = document.querySelector('.phase-3 input');
 
 // Phase 4: The real challenge (final)
 const phase4 = document.querySelector('.phase-4');
-const button2 = document.querySelectorAll('button')[1];
-const rainbowOverlay = document.querySelector('.rainbow-overlay');
+const progress = document.querySelector('.progress');
 
 // Phase 5: Reward
 const phase5 = document.querySelector('.phase-5');
@@ -50,16 +48,18 @@ setTimeout(() => {
   }
 }, 5000);
 
-button.addEventListener('click', () => {
-  phase2.style.transitionDelay = '0s';
-  phase2.classList.remove('visible');
-  setTimeout(() => {
-    createInstance(() => {
-      phase3.classList.add('visible');
-      input.focus();
-    });
-  }, 600);
-});
+document
+  .querySelector('.phase-2 button')
+  .addEventListener('click', () => {
+    phase2.style.transitionDelay = '0s';
+    phase2.classList.remove('visible');
+    setTimeout(() => {
+      createInstance(() => {
+        phase3.classList.add('visible');
+        input.focus();
+      });
+    }, 600);
+  });
 
 input.addEventListener('input', (e) => {
   if (selected.length === e.currentTarget.value.length) {
@@ -91,7 +91,7 @@ function createEndlessInstance(callback) {
     } else if (score <= 9) {
       score += 1;
     }
-    rainbowOverlay.style.transform = `scaleY(${score / 10})`;
+    progress.style.transform = `scaleY(${score / 10})`;
     if (score === 0) {
       setTimeout(callback, 400);
     } else {
@@ -101,29 +101,31 @@ function createEndlessInstance(callback) {
   });
 }
 
-button2.addEventListener('click', () => {
-  phase4.classList.remove('visible');
-  const pad = document.querySelector('.controls');
-  pad.classList.add('visible');
+document
+  .querySelector('.phase-4 button')
+  .addEventListener('click', () => {
+    phase4.classList.remove('visible');
+    const pad = document.querySelector('.controls');
+    pad.classList.add('visible');
 
-  // Handle controls by click
-  const controls = document.querySelectorAll('.controls td');
-  for (let i = 0; i < controls.length; i += 1) {
-    controls[i].addEventListener('click', () => {
-      setPressed(i + 1);
+    // Handle controls by click
+    const controls = document.querySelectorAll('.controls td');
+    for (let i = 0; i < controls.length; i += 1) {
+      controls[i].addEventListener('click', () => {
+        setPressed(i + 1);
+      });
+    }
+
+    // Handle controls by key
+    window.addEventListener('keydown', (e) => {
+      const value = (e.keyCode < 49 || e.keyCode > 57) ? 0 : e.keyCode - 48;
+      if (value === 0) return;
+      setPressed(value);
     });
-  }
 
-  // Handle controls by key
-  window.addEventListener('keydown', (e) => {
-    const value = (e.keyCode < 49 || e.keyCode > 57) ? 0 : e.keyCode - 48;
-    if (value === 0) return;
-    setPressed(value);
+    createEndlessInstance(() => {
+      pad.classList.remove('visible');
+      Reward(renderer);
+      phase5.classList.add('visible');
+    });
   });
-
-  createEndlessInstance(() => {
-    pad.classList.remove('visible');
-    Reward(renderer);
-    phase5.classList.add('visible');
-  });
-});
