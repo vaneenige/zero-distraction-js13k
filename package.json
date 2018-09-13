@@ -1,0 +1,44 @@
+{
+  "name": "zero-distraction-js13k",
+  "version": "1.0.0",
+  "description": "zero-distraction-js13k",
+  "main": "dist/phenomenon.mjs",
+  "unpkg": "dist/phenomenon.umd.js",
+  "scripts": {
+    "start": "http-server demo --silent & npm run watch",
+    "watch": "microbundle watch --format umd --entry demo/src/index.js --output demo/dist/bundle.js",
+    "build": "microbundle --name Phenomenon --format es,umd --sourcemap false",
+    "eslint": "eslint src/index.js",
+    "prepare": "npm run eslint && npm run test && npm run build"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Colin van Eenige",
+    "email": "cvaneenige@gmail.com",
+    "url": "https://use-the-platform.com"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "keywords": [
+    "webgl",
+    "particles",
+    "shaders"
+  ],
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "http-server": "^0.11.1",
+    "microbundle": "^0.6.0",
+    "webpack": "^4.17.1"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base",
+    "env": {
+      "browser": true,
+      "mocha": true
+    }
+  }
+}
