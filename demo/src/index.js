@@ -1,20 +1,6 @@
-import Renderer from './renderer';
-import Instance from './instance';
-import Reward from './reward';
-
-const renderer = Renderer();
-const selected = [];
-
-function createInstance(callback) {
-  Instance(renderer, (index) => {
-    selected.push(index + 1);
-    if (selected.length < 4) {
-      createInstance(callback);
-    } else {
-      callback();
-    }
-  });
-}
+import Renderer from './Renderer';
+import Instance from './Instance';
+import Reward from './Reward';
 
 // Phase 1: message to go offline
 const phase1 = document.querySelector('.phase-1');
@@ -33,14 +19,66 @@ const progress = document.querySelector('.progress');
 // Phase 5: Reward
 const phase5 = document.querySelector('.phase-5');
 
+// Global variables
+const renderer = Renderer();
+const selected = [];
+let pressed = 0;
+let score = 10;
 let online = true;
 
+/**
+ * Handle input for the final task.
+ * @param {number} value
+ */
+function setPressed(value = 0) {
+  const controls = document.querySelectorAll('.controls td');
+  if (pressed !== 0) controls[pressed - 1].classList.remove('active');
+  pressed = value;
+  if (pressed !== 0) controls[value - 1].classList.add('active');
+}
+
+/**
+ * Create and transition instances (with index provided in callback).
+ * @param {function} callback
+ */
+function createInstance(callback) {
+  Instance(renderer, (index) => {
+    selected.push(index + 1);
+    if (selected.length < 4) createInstance(callback);
+    else callback();
+  });
+}
+
+/**
+ * Create and transition instances (while keeping score).
+ * @param {function} callback
+ */
+function createEndlessInstance(callback) {
+  Instance(renderer, (index) => {
+    // Raise or lower score based on user input
+    if (index + 1 === pressed) score -= 1;
+    else if (score <= 9) score += 1;
+
+    // Animate the progress bar based on score
+    progress.style.transform = `scaleY(${score / 10})`;
+
+    // Finish the game or continue with another instance
+    if (score === 0) setTimeout(callback, 400);
+    else createEndlessInstance(callback);
+
+    // Reset user input for next instance
+    setPressed();
+  });
+}
+
+// Listen to change in network (going offline)
 window.addEventListener('offline', () => {
   online = false;
   phase1.classList.remove('visible');
   phase2.classList.add('visible');
 });
 
+// Push to the second stage if still online
 setTimeout(() => {
   if (online) {
     phase1.classList.remove('visible');
@@ -73,33 +111,6 @@ input.addEventListener('input', (e) => {
     }
   }
 });
-
-let pressed = 0;
-let score = 10;
-
-function setPressed(value) {
-  const controls = document.querySelectorAll('.controls td');
-  if (pressed !== 0) controls[pressed - 1].classList.remove('active');
-  pressed = value;
-  if (pressed !== 0) controls[value - 1].classList.add('active');
-}
-
-function createEndlessInstance(callback) {
-  Instance(renderer, (index) => {
-    if (index + 1 === pressed) {
-      score -= 1;
-    } else if (score <= 9) {
-      score += 1;
-    }
-    progress.style.transform = `scaleY(${score / 10})`;
-    if (score === 0) {
-      setTimeout(callback, 400);
-    } else {
-      createEndlessInstance(callback);
-    }
-    setPressed(0);
-  });
-}
 
 document
   .querySelector('.phase-4 button')

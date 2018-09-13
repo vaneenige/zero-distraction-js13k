@@ -1,6 +1,6 @@
-import Phenomenon from '../../src/index';
+import Phenomenon from '../../src';
 
-function renderer() {
+function Renderer() {
   return new Phenomenon({
     settings: {
       position: { x: 0, y: 0, z: 4 },
@@ -13,4 +13,4 @@ function renderer() {
   });
 }
 
-export default renderer;
+export default Renderer;
